@@ -1,0 +1,122 @@
+{
+    "servos": {
+        "0": {
+            "channel": 0,
+            "joint_name": "pinky_mcp",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "1": {
+            "channel": 1,
+            "joint_name": "pinky_pip",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "2": {
+            "channel": 2,
+            "joint_name": "ring_mcp",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "3": {
+            "channel": 3,
+            "joint_name": "ring_pip",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "4": {
+            "channel": 4,
+            "joint_name": "middle_mcp",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "5": {
+            "channel": 5,
+            "joint_name": "middle_pip",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "6": {
+            "channel": 6,
+            "joint_name": "index_mcp",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "7": {
+            "channel": 7,
+            "joint_name": "index_pip",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": true
+        },
+        "8": {
+            "channel": 8,
+            "joint_name": "thumb_cmc",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": false
+        },
+        "9": {
+            "channel": 9,
+            "joint_name": "thumb_mcp",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": false
+        },
+        "10": {
+            "channel": 10,
+            "joint_name": "thumb_ip",
+            "pulse_min": 500,
+            "pulse_max": 2500,
+            "slack_pulse": null,
+            "taut_pulse": null,
+            "curled_pulse": null,
+            "curl_direction_positive": false
+        }
+    },
+    "control_params": {
+        "update_rate_hz": 50.0,
+        "smoothing_factor": 0.15
+    },
+    "metadata": {
+        "last_modified": "2026-01-28T08:31:30.288913",
+        "version": "1.0"
+    }
+}
