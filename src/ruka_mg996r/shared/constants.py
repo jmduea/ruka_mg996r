@@ -2,6 +2,7 @@
 Constants for RUKA MG996R project.
 
 This module defines all shared constants used across the RUKA MG996R package.
+NOTE: Adjust these constants if you have a different wiring setup or servo model.
 """
 
 # ====================================================================================
@@ -54,6 +55,10 @@ FINGER_NAMES: list[str] = ["pinky", "ring", "middle", "index", "thumb"]
 # Safe pulse width range for MG996R servos (in microseconds)
 MG996R_SAFE_PULSE_MIN = 500
 MG996R_SAFE_PULSE_MAX = 2500
+
+# Default pulse range if no calibration exists
+DEFAULT_PULSE_MIN = 500
+DEFAULT_PULSE_MAX = 2500
 
 # ====================================================================================
 # Control Parameters
