@@ -1,0 +1,158 @@
+"""
+Type definitions and Pydantic models for RUKA MG996R.
+"""
+
+from pydantic import BaseModel, Field
+
+# ====================================================================================
+# Calibrationh Models
+# ====================================================================================
+
+
+class ServoCalibration(BaseModel):
+    """
+    Calibration data for a single servo.
+    TODO: Determine the necessity of slack_pulse.
+    TODO: Document fields more thoroughly.
+    TODO: Add test cases for this model.
+    TODO: Add validation to ensure pulse_min < pulse_max and other invariants.
+    """
+
+    channel: int = Field(..., ge=0, lt=16, description="PCA9685 channel number (0-15)")
+    joint_name: str = Field(
+        ..., description="Name of the joint controlled by this servo"
+    )
+
+    # Hardware pulse width limits (calibrated using range_finder.py)
+    pulse_min: int = Field(
+        ..., ge=400, le=2600, description="Minimum pulse width in microseconds"
+    )
+    pulse_max: int = Field(
+        ..., ge=400, le=2600, description="Maximum pulse width in microseconds"
+    )
+    # Operational pulse width limits (calibrated using tendon_calibration.py)
+    slack_pulse: int | None = Field(
+        None, description="Pulse width where the tendon is slack"
+    )
+    taut_pulse: int | None = Field(
+        None, description="Pulse width where the tendon is taut"
+    )
+    curled_pulse: int | None = Field(
+        None, description="Pulse width where the joint is fully curled"
+    )
+    # Direction flag
+    curl_direction_positive: bool = Field(
+        True, description="True if higher pulse = more curled"
+    )
+
+    @property
+    def is_calibrated(self) -> bool:
+        """Check if operational positions are calibrated."""
+        return all(
+            [
+                self.slack_pulse is not None,
+                self.taut_pulse is not None,
+                self.curled_pulse is not None,
+            ]
+        )
+
+    @property
+    def operational_min(self) -> int:
+        """Minimum operational pulse width (open, with tendon taut)."""
+        assert self.taut_pulse is not None
+        return self.taut_pulse
+
+    @property
+    def operational_max(self) -> int:
+        """Maximum operational pulse width (curled position)."""
+        assert self.curled_pulse is not None
+        return self.curled_pulse
+
+    @property
+    def operational_range(self) -> int:
+        """Get the operational pulse range."""
+        if not self.is_calibrated:
+            return 0
+        # Validate invariants
+        assert self.taut_pulse is not None and self.curled_pulse is not None
+        return abs(self.curled_pulse - self.taut_pulse)
+
+    def normalized_to_pulse(self, normalized: float) -> int:
+        """Convert normalized (0=open, 1=curled) to pulse width."""
+        normalized = max(0.0, min(1.0, normalized))
+
+        if not self.is_calibrated:
+            raise ValueError(
+                f"Servo is not fully calibrated, cannot convert normalized value for this servo: {self.joint_name}."
+            )
+
+        assert self.taut_pulse is not None and self.curled_pulse is not None
+
+        if self.curl_direction_positive:
+            return int(
+                self.taut_pulse + normalized * (self.curled_pulse - self.taut_pulse)
+            )
+        else:
+            return int(
+                self.taut_pulse - normalized * (self.taut_pulse - self.curled_pulse)
+            )
+
+    def pulse_to_normalized(self, pulse: int) -> float:
+        """Convert pulse width to normalized position (0=open, 1=curled)."""
+        if not self.is_calibrated:
+            raise ValueError(
+                f"Servo is not fully calibrated, cannot convert pulse value for this servo: {self.joint_name}."
+            )
+
+        assert self.taut_pulse is not None and self.curled_pulse is not None
+
+        if self.curl_direction_positive:
+            return (pulse - self.taut_pulse) / (self.curled_pulse - self.taut_pulse)
+        else:
+            return (self.taut_pulse - pulse) / (self.taut_pulse - self.curled_pulse)
+
+
+class CalibrationData(BaseModel):
+    """
+    Calibration data for all servos.
+    """
+
+    servos: dict[str, ServoCalibration] = Field(
+        default_factory=dict, description="Servo calibrations by channel"
+    )
+    control_params: dict[str, float] = Field(
+        default_factory=lambda: {
+            "update_rate_hz": 50.0,
+            "smoothing_factor": 0.15,
+        },
+        description="Control parameters for the motors that drive the robotic hand",
+    )
+    metadata: dict[str, str] = Field(
+        default_factory=dict, description="Calibration metadata"
+    )
+
+    def get_servo(self, channel: int) -> ServoCalibration | None:
+        """Get servo calibration by channel number."""
+        return self.servos.get(str(channel))
+
+    def set_servo(self, calibration: ServoCalibration) -> None:
+        """Set servo calibration."""
+        self.servos[str(calibration.channel)] = calibration
+
+
+# ===================================================================================
+# Runtime State Models
+# ===================================================================================
+
+
+class ChannelState(BaseModel):
+    """
+    Runtime state of a single servo channel.
+    """
+
+    channel: int
+    joint_name: str
+    target_pulse: int
+    current_pulse: int
+    normalized: float
+    velocity: float = 0.0

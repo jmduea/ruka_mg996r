@@ -14,11 +14,7 @@ keywords = [
     "servo",
     "computer-vision",
 ]
-dependencies = [
-    "numpy>=2.4.1",
-    "pydantic>=2.12.5",
-    "websockets>=16.0",
-]
+dependencies = ["numpy>=2.4.1", "pydantic>=2.12.5", "websockets>=16.0"]
 
 [project.optional-dependencies]
 server = [
@@ -27,10 +23,7 @@ server = [
     "scipy>=1.17.0",
     "uvicorn>=0.40.0",
 ]
-client = [
-    "mediapipe>=0.10.32",
-    "opencv-python>=4.13.0.90",
-]
+client = ["mediapipe>=0.10.32", "opencv-python>=4.13.0.90"]
 calibration = ["adafruit-circuitpython-servokit>=1.3.22"]
 dev = [
     "mypy>=1.19.1",
@@ -68,12 +61,12 @@ line-length = 88
 
 [tool.ruff.lint]
 select = [
-    "E",    # pycodestyle errors
-    "W",    # pycodestyle warnings
-    "F",    # pyflakes
-    "I",    # isort
-    "B",    # flake8-bugbear
-    "UP",   # pyupgrade
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "UP", # pyupgrade
 ]
 ignore = []
 
