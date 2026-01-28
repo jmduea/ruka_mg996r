@@ -80,36 +80,39 @@ class ServoCalibration(BaseModel):
     def normalized_to_pulse(self, normalized: float) -> int:
         """Convert normalized (0=open, 1=curled) to pulse width."""
         normalized = max(0.0, min(1.0, normalized))
-
         if not self.is_calibrated:
-            raise ValueError(
-                f"Servo is not fully calibrated, cannot convert normalized value for this servo: {self.joint_name}."
-            )
-
-        assert self.taut_pulse is not None and self.curled_pulse is not None
-
-        if self.curl_direction_positive:
-            return int(
-                self.taut_pulse + normalized * (self.curled_pulse - self.taut_pulse)
-            )
+            # Fallback to full range
+            if self.curl_direction_positive:
+                return int(
+                    self.pulse_min + normalized * (self.pulse_max - self.pulse_min)
+                )
+            else:
+                return int(
+                    self.pulse_max - normalized * (self.pulse_max - self.pulse_min)
+                )
         else:
-            return int(
-                self.taut_pulse - normalized * (self.taut_pulse - self.curled_pulse)
-            )
+            if self.curl_direction_positive:
+                return int(
+                    self.taut_pulse + normalized * (self.curled_pulse - self.taut_pulse)
+                )
+            else:
+                return int(
+                    self.taut_pulse - normalized * (self.taut_pulse - self.curled_pulse)
+                )
 
     def pulse_to_normalized(self, pulse: int) -> float:
         """Convert pulse width to normalized position (0=open, 1=curled)."""
         if not self.is_calibrated:
-            raise ValueError(
-                f"Servo is not fully calibrated, cannot convert pulse value for this servo: {self.joint_name}."
-            )
-
-        assert self.taut_pulse is not None and self.curled_pulse is not None
-
-        if self.curl_direction_positive:
-            return (pulse - self.taut_pulse) / (self.curled_pulse - self.taut_pulse)
+            # Fallback to full range
+            if self.curl_direction_positive:
+                return (pulse - self.pulse_min) / (self.pulse_max - self.pulse_min)
+            else:
+                return (self.pulse_max - pulse) / (self.pulse_max - self.pulse_min)
         else:
-            return (self.taut_pulse - pulse) / (self.taut_pulse - self.curled_pulse)
+            if self.curl_direction_positive:
+                return (pulse - self.taut_pulse) / (self.curled_pulse - self.taut_pulse)
+            else:
+                return (self.taut_pulse - pulse) / (self.taut_pulse - self.curled_pulse)
 
 
 class CalibrationData(BaseModel):

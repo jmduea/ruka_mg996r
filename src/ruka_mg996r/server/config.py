@@ -74,16 +74,12 @@ def load_calibration(filepath: str | None = None) -> CalibrationData:
         logger.info("Using default calibration.")
         return get_default_calibration()
 
-    try:
-        with open(path) as f:
-            data = f.read()
-        calibration = CalibrationData.model_validate_json(data)
+    with open(path) as f:
+        data = f.read()
+    # Pydantic validation
+    calibration = CalibrationData.model_validate_json(data)
 
-        return calibration
-
-    except Exception as e:
-        logger.error(f"Error loading calibration file: {e}")
-        raise ValueError(f"Invalid calibration file: {filepath}") from e
+    return calibration
 
 
 def save_calibration(calibration: CalibrationData, filepath: str | None = None) -> str:
@@ -121,7 +117,7 @@ def save_calibration(calibration: CalibrationData, filepath: str | None = None) 
             os.fsync(f.fileno())  # force write to disk
 
         tmp_path.replace(path)
-    except Exception as e:
+    except OSError as e:
         if tmp_path.exists():
             tmp_path.unlink()
         logger.error(f"Error saving calibration file: {e}")
@@ -129,11 +125,3 @@ def save_calibration(calibration: CalibrationData, filepath: str | None = None) 
 
     logger.info(f"Calibration saved to: {filepath}")
     return str(path)
-
-
-if __name__ == "__main__":
-    # Test loading calibration
-    calib = load_calibration()
-    # for channel, servo_calib in calib.servos.items():
-    #     print(f"Channel {channel}: {servo_calib}")
-    save_calibration(calib)

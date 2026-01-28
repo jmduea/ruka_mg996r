@@ -360,13 +360,21 @@ class ServoController:
         channel_positions = {}
 
         for finger_name, normalized in positions.items():
+            logger.debug(
+                f"Setting finger '{finger_name}' to normalized position {normalized}"
+            )
             channels = JOINT_CHANNELS.get(finger_name, [])
+            logger.debug(f"Mapped to channels: {channels}")
             for ch in channels:
+                logger.debug(
+                    f"Setting channel {ch} to normalized position {normalized}"
+                )
                 channel_positions[str(ch)] = normalized
 
         self._command_queue.append(
             {"type": "set_normalized", "positions": channel_positions}
         )
+        logger.debug(f"Queued finger position command: {channel_positions}")
 
     def set_channel_positions(self, positions: dict[int, float]) -> None:
         """
