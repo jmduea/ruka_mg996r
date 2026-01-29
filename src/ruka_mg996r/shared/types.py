@@ -144,6 +144,24 @@ class CalibrationData(BaseModel):
 # ===================================================================================
 
 
+class FingerPositions(BaseModel):
+    """
+    Current positions of all fingers in normalized form (0=open, 1=curled).
+    """
+
+    pinky: float | None = Field(None, ge=0.0, le=1.0)
+    ring: float | None = Field(None, ge=0.0, le=1.0)
+    middle: float | None = Field(None, ge=0.0, le=1.0)
+    index: float | None = Field(None, ge=0.0, le=1.0)
+    thumb: float | None = Field(None, ge=0.0, le=1.0)
+
+    def to_dict(self) -> dict[str, float]:
+        """Convert to dictionary, excluding None values."""
+        return {
+            finger: pos for finger, pos in self.model_dump(exclude_none=True).items()
+        }
+
+
 class ChannelState(BaseModel):
     """
     Runtime state of a single servo channel.
@@ -155,3 +173,8 @@ class ChannelState(BaseModel):
     current_pulse: int
     normalized: float
     velocity: float = 0.0
+
+
+# ===================================================================================
+# Configuration Models
+# ===================================================================================

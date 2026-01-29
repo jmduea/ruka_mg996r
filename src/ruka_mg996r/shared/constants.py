@@ -59,6 +59,7 @@ MG996R_SAFE_PULSE_MAX = 2500
 # Default pulse range if no calibration exists
 DEFAULT_PULSE_MIN = 500
 DEFAULT_PULSE_MAX = 2500
+DEFAULT_PULSE_CENTER = (DEFAULT_PULSE_MIN + DEFAULT_PULSE_MAX) // 2
 
 # ====================================================================================
 # Control Parameters
