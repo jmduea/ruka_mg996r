@@ -27,3 +27,8 @@ except ImportError:
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)  # type: ignore
         return ch
+
+
+def clear_screen():
+    """Clear terminal screen."""
+    print("\033[2J\033[H", end="")

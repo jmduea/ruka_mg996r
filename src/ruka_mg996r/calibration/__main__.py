@@ -23,11 +23,12 @@ def cmd_range(args) -> int:
 
     return run_range_finder(args.channels, args.output)
 
-    # def cmd_tendon(args) -> int:
-    """Run the tendon calibration tool."""
-    # from ruka_mg996r.calibration.tendon_calibrator import run_tendon_calibrator
 
-    # return run_tendon_calibrator(args.config)
+def cmd_tendon(args) -> int:
+    """Run the tendon calibration tool."""
+    from ruka_mg996r.calibration.tendon_calibrator import run_tendon_calibration
+
+    return run_tendon_calibration(args.config)
 
     # def cmd_test(args) -> int:
     """Test calibration."""
