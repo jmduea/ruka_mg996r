@@ -218,11 +218,7 @@ class ServoController:
             desired_velocity = error * alpha * self.update_rate_hz
 
             # Safety limits
-            max_velocity = (
-                300.0  # TODO: move to servo calibration
-                * (servo_cal.pulse_max - servo_cal.pulse_min)
-                / 180.0
-            )
+            max_velocity = 300.0 * (servo_cal.pulse_max - servo_cal.pulse_min) / 180.0
             desired_velocity = np.clip(desired_velocity, -max_velocity, max_velocity)
 
             # Update pos
@@ -260,7 +256,6 @@ class ServoController:
 
         try:
             # Convert pulse to angle (0-180) for ServoKit
-            # TODO: Verify/Unit test this conversion
             pulse_range = servo_cal.pulse_max - servo_cal.pulse_min
             angle = (pulse - servo_cal.pulse_min) / pulse_range * 180.0
             angle = np.clip(angle, 0, 180)
@@ -354,8 +349,6 @@ class ServoController:
         Args:
             positions: Dict mapping finger name to normalized posoition (0.0-1.0)
                        e.g., {'index': 0.5, 'thumb': 0.3}
-        TODO: We should map to joint names instead of finger names or handle lists of normalized positions (2 for fingers, 3 for thumb)
-        TODO: update documentation, handling
         """
         channel_positions = {}
 

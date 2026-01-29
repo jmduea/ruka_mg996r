@@ -50,7 +50,6 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    # TODO: replace with loguru
     import logging
 
     logging.basicConfig(

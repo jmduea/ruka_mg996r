@@ -74,8 +74,6 @@ def main() -> int:
         parser.print_help()
         return 1
 
-    # TODO: Add range, tendon, test command implementations
-
     return 0
 
 

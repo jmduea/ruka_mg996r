@@ -12,10 +12,6 @@ from pydantic import BaseModel, Field
 class ServoCalibration(BaseModel):
     """
     Calibration data for a single servo.
-    TODO: Determine the necessity of slack_pulse.
-    TODO: Document fields more thoroughly.
-    TODO: Add test cases for this model.
-    TODO: Add validation to ensure pulse_min < pulse_max and other invariants.
     """
 
     channel: int = Field(..., ge=0, lt=16, description="PCA9685 channel number (0-15)")
