@@ -179,116 +179,6 @@ def set_all_servos_to_open(kit: ServoKit, calibration: CalibrationData) -> None:
     input("  Press Enter to release servos and finish...")
 
 
-# def print_summary(config: CalibrationConfig):
-#     """Print a summary of all calibrated servos."""
-#     print("\n" + "=" * 60)
-#     print(" SERVO RANGE CALIBRATION SUMMARY")
-#     print("=" * 60)
-
-#     if not config.servos:
-#         print(" No servos calibrated yet.")
-#         return
-
-#     print(f"\n  {'Ch':<4} {'Joint Name':<16} {'Min':>6} {'Max':>6} {'Range':>8}")
-#     print(" " + "-" * 44)
-
-#     for ch in sorted(config.servos.keys()):
-#         servo = config.servos[ch]
-#         range_us = servo.pulse_max - servo.pulse_min
-#         print(
-#             f"  {ch:<4} {servo.joint_name:<16} "
-#             f"{servo.pulse_min:>6} {servo.pulse_max:>6} {range_us:>6}us"
-#         )
-
-#     print()
-
-
-# def main():
-#     parser = argparse.ArgumentParser(
-#         description="Find true pulse width range for MG996R servos"
-#     )
-#     parser.add_argument(
-#         "--config",
-#         default=DEFAULT_CALIBRATION_PATH,
-#         help=f"Path to calibration JSON file (default: {DEFAULT_CALIBRATION_PATH})",
-#     )
-#     parser.add_argument(
-#         "--channels",
-#         type=str,
-#         default=None,
-#         help="Comma-separated list of channels to calibrate (default: 0-10)",
-#     )
-#     args = parser.parse_args()
-
-#     if args.channels:
-#         channels = [int(ch.strip()) for ch in args.channels.split(",")]
-#     else:
-#         channels = list(range(11))  # Default channels 0-10
-
-#     print("\n" + "=" * 50)
-#     print(" MG996R SERVO RANGE FINDER")
-#     print("=" * 50)
-#     print(f"\n  Config file: {args.config}")
-#     print(f"    Channels to calibrate: {channels}\n")
-
-#     config = load_calibration(args.config)
-#     if config is None:
-#         print("! Creating new calibration configuration")
-#         config = CalibrationConfig()
-
-#     # Try connecting to hardware
-#     try:
-#         kit = ServoKit(channels=16)
-#         print("SUCCESS: Connected to PCA9685")
-#     except Exception as e:
-#         print(f"ERROR: Failed to connect to PCA9685: {e}")
-#         print("\nMake sure you are running on the Raspberry Pi with PCA9685 connected.")
-#         return 1
-
-#     print("\nThis script will find the true pulse width limits for each servo.")
-#     print("Run this BEFORE installing tendons to avoid damage.\n")
-
-#     for channel in channels:
-#         input(
-#             f"\nPress Enter to calibrate channel {channel} ({DEFAULT_JOINT_NAMES.get(channel, 'unknown joint')})..."
-#         )
-
-#         try:
-#             min_p, max_p, center = find_servo_range(kit, channel)
-#             update_servo_calibration(config, channel, min_p, max_p)
-
-#             save_calibration(config, args.config)
-
-#         except KeyboardInterrupt:
-#             print("\n\n!!!  Calibration interrupted")
-#             save_response = input("Save progress? (y/n): ").strip().lower()
-#             if save_response == "y":
-#                 save_calibration(config, args.config)
-#             break
-
-#     # Set all servos to open before releasing
-#     if config.servos:
-#         set_all_servos_to_open(kit, config)
-
-#     print("\nReleasing all servos...")
-#     for ch in range(16):
-#         try:
-#             kit.servo[ch].angle = None
-#         except Exception:
-#             pass
-
-#     print_summary(config)
-
-#     print(f"\nCalibration saved to: {args.config}")
-#     print("Next steps:")
-#     print(" 1. Install tendons")
-#     print(
-#         " 2. Run tendon calibration (calibrate.py) to set slack/taut/curled positions"
-#     )
-
-#     return 0
-
-
 def run_range_finder(
     channels: str | None = None,
     output_path: str = DEFAULT_CALIBRATION_PATH,
@@ -340,12 +230,21 @@ def run_range_finder(
         print("\nMake sure you are running on the Raspberry Pi with PCA9685 connected.")
         return 1
 
-    for channel in channel_list:
-        input(
-            f"\nPress Enter to calibrate channel {channel} ({JOINT_NAMES.get(channel, 'unknown joint')})..."
-        )
+    # Main calibration loop
+    try:
+        for channel in channel_list:
+            user_input = input(
+                f"\nPress Enter to calibrate {channel} ({JOINT_NAMES.get(channel, 'unknown joint')} (or 'q' to quit, 's' to skip))..."
+            ).strip().lower()
+            
+            if user_input in ('q', 'exit', 'quit'):
+                print("\nExiting calibration loop...")
+                break
+            
+            if user_input == "s":
+                print(f"Skipping channelk {channel}...")
+                continue
 
-        try:
             min_pulse, max_pulse = find_servo_range(kit, channel)
 
             # update calibration data
@@ -369,12 +268,11 @@ def run_range_finder(
             # save updated calibration
             save_calibration(calibration, output_path)
 
-        except KeyboardInterrupt:
-            print("\n\n!!!  Calibration interrupted")
-            save_response = input("Save progress? (y/n): ").strip().lower()
-            if save_response == "y":
-                save_calibration(calibration, output_path)
-            break
+    except KeyboardInterrupt:
+        print("\n\n!!!  Calibration interrupted")
+        save_response = input("Save progress? (y/n): ").strip().lower()
+        if save_response == "y":
+            save_calibration(calibration, output_path)
 
     print("\nRange finding complete.")
     set_all_servos_to_open(kit, calibration)
@@ -391,13 +289,16 @@ def run_range_finder(
     print(f"\n  {'Ch':<4} {'Joint':<16} {'Min':>6} {'Max':>6} {'Range':>8}")
     print(f" {'-' * 44}")
 
-    for ch in sorted(calibration.servos.keys()):
-        servo = calibration.servos[ch]
-        range_us = servo.pulse_max - servo.pulse_min
-        print(
-            f"  {servo.channel:<4} {servo.joint_name:<16} "
-            f"{servo.pulse_min:>6} {servo.pulse_max:>6} {range_us:>6}us"
-        )
+    if not calibration.servos:
+        print("  No servos calibrated yet.")
+    else:
+        for ch in sorted(calibration.servos.keys()):
+            servo = calibration.servos[ch]
+            range_us = servo.pulse_max - servo.pulse_min
+            print(
+                f"  {servo.channel:<4} {servo.joint_name:<16} "
+                f"{servo.pulse_min:>6} {servo.pulse_max:>6} {range_us:>6}us"
+            )
 
     print(f"\nCalibration saved to: {output_path}")
     print("Next steps:")
