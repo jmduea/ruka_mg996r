@@ -5,7 +5,7 @@ Type definitions and Pydantic models for RUKA MG996R.
 from pydantic import BaseModel, Field
 
 # ====================================================================================
-# Calibrationh Models
+# Calibration Models
 # ====================================================================================
 
 
