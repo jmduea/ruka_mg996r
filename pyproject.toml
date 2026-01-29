@@ -14,17 +14,25 @@ keywords = [
     "servo",
     "computer-vision",
 ]
-dependencies = ["numpy>=2.4.1", "pydantic>=2.12.5", "websockets>=16.0"]
+dependencies = [
+    "numpy>=2.4.1",
+    "pydantic>=2.12.5",
+    "websockets>=16.0",
+]
 
 [project.optional-dependencies]
 server = [
     "adafruit-circuitpython-servokit>=1.3.22",
     "fastapi>=0.128.0",
+    "rpi-lgpio>=0.6",
     "scipy>=1.17.0",
     "uvicorn>=0.40.0",
 ]
 client = ["mediapipe>=0.10.32", "opencv-python>=4.13.0.90"]
-calibration = ["adafruit-circuitpython-servokit>=1.3.22"]
+calibration = [
+    "adafruit-circuitpython-servokit>=1.3.22",
+    "rpi-lgpio>=0.6",
+]
 dev = [
     "mypy>=1.19.1",
     "pre-commit>=4.5.1",
