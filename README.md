@@ -18,7 +18,9 @@ This project differs from the original RUKA hand design in two main ways:
      - 8 [DYNAMIXEL XL330-M288-T](https://www.robotis.us/dynamixel-xl330-m288-t/) motors ($27.49 each as of 1/27/26, ALSO on backorder)
      - [Manus Gloves](https://www.manus-meta.com/) which as far as I can tell require purchasing a license to use them, aren't easily available for individual purchase, and represent an unknown cost due to opacity around pricing.
 
-   - These components add up to well over $1,200 USD, and are difficult to source from the perspective of an individual hobbyist/developer.
+   - The motors alone add up to well over $1,200 USD and have long lead times due to supply issues.
+   - The Manus Gloves are also not easily obtainable for individuals.
+   - Choosing to not use these components also means we can't use the official RUKA software they provide.
 
    - This adaptation uses these components to replace the above components:
 
@@ -34,6 +36,7 @@ This project differs from the original RUKA hand design in two main ways:
      - Advanced hand-tracking capabilities with the Manus Gloves
      - Smooth and responsive control of the robotic hand
      - Closed-loop feedback for precise positioning
+     - Pre-trained model for those without Manus Gloves
 
    - This adaptation, using MG996R servos and webcam-based hand-tracking, offers:
 
@@ -41,6 +44,7 @@ This project differs from the original RUKA hand design in two main ways:
      - Hand-tracking capabilities that depend on the quality of the webcam and the effectiveness of the hand-tracking software used
      - Control that may be less smooth and responsive compared to the original setup
      - Open-loop control without feedback, which may lead to less accurate positioning
+     - Requires manual calibration for each build to ensure proper tendon tension and servo ranges
 
    - While this adaptation may not match the performance of the original RUKA hand, it provides a more accessible entry point for hobbyists and developers interested in robotic hands (the main reason for this adaptation).
 
