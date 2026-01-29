@@ -153,7 +153,7 @@ def set_all_servos_to_open(kit: ServoKit, calibration: CalibrationData) -> None:
     print("\n  Thumb servos (ch 8-10): rotating to MAX pulse (open/180°)")
     print("  Finger servos (ch 0-7): rotating to MIN pulse (open/0°)\n")
 
-    for ch_str in sorted(calibration.servos.keys()):
+    for ch_str in sorted(calibration.servos.keys(), key=lambda x: int(x)):
         ch = int(ch_str)
         servo = calibration.servos[ch_str]
         open_pulse = get_open_pulse(ch, servo.pulse_min, servo.pulse_max)
@@ -233,16 +233,20 @@ def run_range_finder(
     # Main calibration loop
     try:
         for channel in channel_list:
-            user_input = input(
-                f"\nPress Enter to calibrate {channel} ({JOINT_NAMES.get(channel, 'unknown joint')} (or 'q' to quit, 's' to skip))..."
-            ).strip().lower()
-            
-            if user_input in ('q', 'exit', 'quit'):
+            user_input = (
+                input(
+                    f"\nPress Enter to calibrate {channel} ({JOINT_NAMES.get(channel, 'unknown joint')} (or 'q' to quit, 's' to skip))..."
+                )
+                .strip()
+                .lower()
+            )
+
+            if user_input in ("q", "exit", "quit"):
                 print("\nExiting calibration loop...")
                 break
-            
+
             if user_input == "s":
-                print(f"Skipping channelk {channel}...")
+                print(f"Skipping channel {channel}...")
                 continue
 
             min_pulse, max_pulse = find_servo_range(kit, channel)
@@ -292,7 +296,7 @@ def run_range_finder(
     if not calibration.servos:
         print("  No servos calibrated yet.")
     else:
-        for ch in sorted(calibration.servos.keys()):
+        for ch in sorted(calibration.servos.keys(), key=lambda x: int(x)):
             servo = calibration.servos[ch]
             range_us = servo.pulse_max - servo.pulse_min
             print(
